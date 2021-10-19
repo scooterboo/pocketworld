@@ -1,2 +1,2 @@
 # pocketworld
- a p/*kem/*n emulator / sandbox gmae
+ a p\*kem\*n emulator / sandbox gmae
