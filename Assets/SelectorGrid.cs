@@ -75,7 +75,7 @@ public class SelectorGrid : MonoBehaviour
         {
             for (int j = 0; j < HDir[currtile].width; ++j)
             {
-                Vector3Int tpos = new Vector3Int(j + (int)gameObject.transform.position.x, i + (int)gameObject.transform.position.y, 0);
+                Vector3Int tpos = new Vector3Int(j + (int)(gameObject.transform.position.x + 0.5f), i + (int)(gameObject.transform.position.y + 0.5f), 0);
                 Tile tile = WorldTilemap.GetTile<Tile>(tpos);
                 if (tile == null) continue;
                 if (WorldTilemap.GetComponent<the_world>().properties[tile].water || WorldTilemap.GetComponent<the_world>().properties[tile].bump || player.position == tpos)
