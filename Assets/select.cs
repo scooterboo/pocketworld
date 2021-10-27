@@ -7,6 +7,7 @@ public class select : MonoBehaviour
     public Tilemap MenuTilemap;
     public Tilemap SelectorTilemap;
     public Transform menuselector;
+    public Transform MainTileMenuTrans;
     private Vector3 oldpos;
     private Vector3 pos;
 
@@ -25,7 +26,8 @@ public class select : MonoBehaviour
         Vector3 ppos = gameObject.transform.parent.parent.position;
 
         //make mouseing over the manu make the world placing slector disappear.
-        if (mpos.x - ppos.x > -7.5f)
+        //make the main menu being present make it disappear too.
+        if (mpos.x - ppos.x > -7.5f && MainTileMenuTrans.position.z > 0)
         {
             lpos.z = 0f;
         }

@@ -22,6 +22,7 @@ public class Movement : MonoBehaviour
     private Texture2D playertex;
     private int currsprite = 47;
     private List<Sprite[]> playersprite = new List<Sprite[]>();
+    public Transform MainTileMenuTrans;
 
 
     //public CharacterController controller;
@@ -33,8 +34,8 @@ public class Movement : MonoBehaviour
         time = Time.time;
         step_time = time;
 
-        if (choppy_movement) { smoothment_factor = 1.0f / 8.0f; }
-        else { smoothment_factor = 1.0f / 16.0f; }
+        if (choppy_movement) { smoothment_factor = 8.0f; }
+        else { smoothment_factor = 16.0f; }
 
         //build the ditionary. This lets me manipulate variable names like strings.
         sprstr2inty.Add("sprite_down", 0);
@@ -74,31 +75,34 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if you press a direction, you go that direction.
-        if (Input.GetKeyDown("up") || Input.GetKeyDown("w")) direction = 1;
-        if (Input.GetKeyDown("right") || Input.GetKeyDown("d")) direction = 2;
-        if (Input.GetKeyDown("down") || Input.GetKeyDown("s")) direction = 3;
-        if (Input.GetKeyDown("left") || Input.GetKeyDown("a")) direction = 4;
-        if (Input.GetKeyDown("3"))
+        WorldTilemap.GetComponent<the_world>().loadchunk3x3(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y));
+
+        //don't move wile the main tile menu is up.
+        if (MainTileMenuTrans.position.z > 0)
         {
-            --currsprite;
-            if (currsprite < 0) currsprite = 50;
-            gameObject.GetComponent<SpriteRenderer>().sprite = playersprite[currsprite][sprstr2inty["sprite_" + sprite_direction]];
+            //if you press a direction, you go that direction.
+            if (Input.GetKeyDown("up") || Input.GetKeyDown("w")) direction = 1;
+            if (Input.GetKeyDown("right") || Input.GetKeyDown("d")) direction = 2;
+            if (Input.GetKeyDown("down") || Input.GetKeyDown("s")) direction = 3;
+            if (Input.GetKeyDown("left") || Input.GetKeyDown("a")) direction = 4;
+            if (Input.GetKeyDown("3"))
+            {
+                --currsprite;
+                if (currsprite < 0) currsprite = 50;
+                gameObject.GetComponent<SpriteRenderer>().sprite = playersprite[currsprite][sprstr2inty["sprite_" + sprite_direction]];
+            }
+
+            if (Input.GetKeyDown("4"))
+            {
+                ++currsprite;
+                if (currsprite > 50) currsprite = 0;
+                gameObject.GetComponent<SpriteRenderer>().sprite = playersprite[currsprite][sprstr2inty["sprite_" + sprite_direction]];
+            }
         }
-
-        if (Input.GetKeyDown("4"))
-        {
-            ++currsprite;
-            if (currsprite >50) currsprite = 0;
-            gameObject.GetComponent<SpriteRenderer>().sprite = playersprite[currsprite][sprstr2inty["sprite_" + sprite_direction]];
-        }
-
-
-
-
 
         //conceptually, think of this as the end of a step/start of a new one.
-        if (time < Time.time - walk_delay)
+        //don't move wile the main tile menu is up.
+        if (time < Time.time - walk_delay && MainTileMenuTrans.position.z > 0)
         {
 
             //read held directions
@@ -138,7 +142,7 @@ public class Movement : MonoBehaviour
                 WorldTilemap.GetComponent<the_world>().loadchunk3x3(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y));
 
 
-                step_time = time + (walk_delay * smoothment_factor);
+                step_time = time + (walk_delay / smoothment_factor);
                 if (step_number > 1) foot_side_right = !foot_side_right;
                 step_number = 1;
 
@@ -175,19 +179,19 @@ public class Movement : MonoBehaviour
         }
 
         //a step is sceduled:
-        if (step_time < Time.time && step_direction != 0)
+        if (step_time < Time.time && step_direction != 0 && smoothment_factor >= step_number)
         {
             step_number++;
-            if (step_direction == 1) pos.y += smoothment_factor;
-            if (step_direction == 2) pos.x += smoothment_factor;
-            if (step_direction == 3) pos.y -= smoothment_factor;
-            if (step_direction == 4) pos.x -= smoothment_factor;
+            if (step_direction == 1) pos.y += 1.0f / smoothment_factor;
+            if (step_direction == 2) pos.x += 1.0f / smoothment_factor;
+            if (step_direction == 3) pos.y -= 1.0f / smoothment_factor;
+            if (step_direction == 4) pos.x -= 1.0f / smoothment_factor;
 
             transform.position = pos;
-            step_time = time + step_number * (walk_delay * smoothment_factor);
+            step_time = time + step_number * (walk_delay / smoothment_factor);
             string step_foot = "left";
             if (foot_side_right) step_foot = "right";
-            if (step_number > (1 / (smoothment_factor * 2.0f))) gameObject.GetComponent<SpriteRenderer>().sprite = playersprite[currsprite][sprstr2inty["sprite_" + sprite_direction + "_walk_" + step_foot]];
+            if (step_number > (smoothment_factor / 2.0f)) gameObject.GetComponent<SpriteRenderer>().sprite = playersprite[currsprite][sprstr2inty["sprite_" + sprite_direction + "_walk_" + step_foot]];
 
         }
 

@@ -8,6 +8,7 @@ public class menu : MonoBehaviour
     public Tilemap MenuTilemap;
     public Tilemap SelectorTilemap;
     public Transform menuselector;
+    public Transform MainTileMenuTrans;
     private int tileloc = 0;
 
     private int tilemax = 824;
@@ -76,7 +77,7 @@ public class menu : MonoBehaviour
                 if (pos.y < -6) pos.y = -6f;
                 if (pos.y == -6f)
                 {
-                    print("menu!");
+                    MainTileMenuTrans.position = new Vector3(MainTileMenuTrans.position.x, MainTileMenuTrans.position.y, -MainTileMenuTrans.position.z);
                 }
                 else
                 {
@@ -121,6 +122,8 @@ public class menu : MonoBehaviour
         if (Input.GetKeyDown("q"))
         {
             gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, -gameObject.transform.position.z);
+            MainTileMenuTrans.position = new Vector3(MainTileMenuTrans.position.x, MainTileMenuTrans.position.y, Mathf.Abs(MainTileMenuTrans.position.z));
+
         }
 
     }
