@@ -25,9 +25,13 @@ public class TileMenuTiles : MonoBehaviour
         RightArrowTile.sprite = RightArrow;
         tilemap.SetTile(new Vector3Int(0, 1, 0), LeftArrowTile);
         tilemap.SetTile(new Vector3Int(10, 1, 0), RightArrowTile);
+
+        int[] toptabs = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110 };
+
+
         for (int i = 1; i < 10; ++i)
         {
-            tilemap.SetTile(new Vector3Int(i, 1, 0), tiles[i + 8]);
+            tilemap.SetTile(new Vector3Int(i, 1, 0), tiles[toptabs[i-1]]);
         }
 
 
@@ -40,6 +44,9 @@ public class TileMenuTiles : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetMouseButtonDown(0) && gameObject.transform.position.z < 0)
+        {
+            
+        }
     }
 }

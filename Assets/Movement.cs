@@ -75,7 +75,6 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        WorldTilemap.GetComponent<the_world>().loadchunk3x3(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y));
 
         //don't move wile the main tile menu is up.
         if (MainTileMenuTrans.position.z > 0)
