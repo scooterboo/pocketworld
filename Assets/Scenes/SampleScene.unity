@@ -384,6 +384,7 @@ MonoBehaviour:
   tiles: []
   LeftArrow: {fileID: 21300000, guid: 24d64616b77e96f46838e7279a86dff3, type: 3}
   RightArrow: {fileID: 21300000, guid: 27dc5fc5e200dc04eb5f653740c776a6, type: 3}
+  SideMenu: {fileID: 1186375808}
 --- !u!1 &540144314
 GameObject:
   m_ObjectHideFlags: 0

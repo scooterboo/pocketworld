@@ -89,36 +89,6 @@ public class menu : MonoBehaviour
 
         }
 
-
-        if (Input.GetKeyDown("2") && gameObject.transform.position.z < 0)
-        {
-            tileloc += 8;
-            if (tileloc > tilemax)
-            {
-                tileloc -= (tilemax + 8);
-            }
-            for (int i = (tileloc + 1); i <= (tileloc + 8); ++i)
-            {
-                MenuTilemap.SetTile(new Vector3Int(0, i - (tileloc + 1), 0), WorldTilemap.GetComponent<the_world>().tiles[i]);
-            }
-            SelectorTilemap.GetComponent<SelectorGrid>().currtile = int.Parse(MenuTilemap.GetTile<Tile>(new Vector3Int((int)menuselector.localPosition.x, (int)(3.5f + menuselector.localPosition.y / 1.5f), 0)).name);
-            SelectorTilemap.GetComponent<SelectorGrid>().UpdateSprite();
-        }
-        if (Input.GetKeyDown("1") && gameObject.transform.position.z < 0)
-        {
-            tileloc -= 8;
-            if (tileloc < 0)
-            {
-                tileloc += (tilemax + 8);
-            }
-            for (int i = (tileloc + 1); i <= (tileloc + 8); ++i)
-            {
-                MenuTilemap.SetTile(new Vector3Int(0, i - (tileloc + 1), 0), WorldTilemap.GetComponent<the_world>().tiles[i]);
-            }
-            SelectorTilemap.GetComponent<SelectorGrid>().currtile = int.Parse(MenuTilemap.GetTile<Tile>(new Vector3Int((int)menuselector.localPosition.x, (int)(3.5f + menuselector.localPosition.y / 1.5f), 0)).name);
-            SelectorTilemap.GetComponent<SelectorGrid>().UpdateSprite();
-        }
-
         if (Input.GetKeyDown("q"))
         {
             gameObject.transform.position = new Vector3(gameObject.transform.position.x, gameObject.transform.position.y, -gameObject.transform.position.z);
@@ -126,5 +96,14 @@ public class menu : MonoBehaviour
 
         }
 
+    }
+
+    //Changes the current tile selected on the menu to the given tile number
+    public void updatetile(int tile)
+    {
+        Vector3 pos = menuselector.localPosition;
+        MenuTilemap.SetTile(new Vector3Int((int)menuselector.localPosition.x, (int)(3.5f + menuselector.localPosition.y / 1.5f), 0), WorldTilemap.GetComponent<the_world>().tiles[tile]);
+        SelectorTilemap.GetComponent<SelectorGrid>().currtile = tile;
+        SelectorTilemap.GetComponent<SelectorGrid>().UpdateSprite();
     }
 }

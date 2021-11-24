@@ -9,6 +9,7 @@ public class TileMenuTiles : MonoBehaviour
     public List<Tile> tiles;
     public Sprite LeftArrow;
     public Sprite RightArrow;
+    public GameObject SideMenu;
     private Tile LeftArrowTile;
     private Tile RightArrowTile;
     private Tilemap ThisTilemap;
@@ -36,7 +37,7 @@ public class TileMenuTiles : MonoBehaviour
         //the tiles I have sorted through already:
         toptabs.AddRange(new List<int> { -1, 10, 13, 18, 20, 32, 14, 25, 15, 343, -2 });
         toptabs.AddRange(new List<int> { -1, 139, 119, 135, 125, 122, 123, 128, 342, 193, -2 });
-        toptabs.AddRange(new List<int> { -1, 132, 222, 255, 445, 456, 274, 805, 6, 6, -2 });
+        toptabs.AddRange(new List<int> { -1, 132, 222, 255, 445, 456, 274, 805, 827, 6, -2 });
 
         //TODO: make this a json
         BottomTiles.Add(new List<int>());//-1
@@ -69,6 +70,7 @@ public class TileMenuTiles : MonoBehaviour
         BottomTiles.Add(new List<int> { 459, 461, 462, 469, 454, 455, 456, 748, 749, 6, 460, 463, 464, 470, 457, 458, 466, 750, 751, 6, 471, 472, 473, 474, 757, 758, 758, 758, 758, 759, 460, 463, 464, 470, 745, 199, 199, 199, 199, 746, 6, 6, 6, 6, 760, 762, 762, 762, 762, 764, 6, 6, 6, 6, 761, 763, 763, 763, 743, 765 });//456 museum pieces
         BottomTiles.Add(new List<int> { 260, 261, 263, 264, 267, 268, 271, 6, 6, 6, 197, 262, 265, 266, 269, 270, 273, 6, 6, 6, 274, 199, 199, 277, 399, 400, 6, 6, 6, 6, 275, 276, 278, 279, 401, 402 });//274 misc objects
         BottomTiles.Add(new List<int> { 801, 340, 810, 811, 790, 791, 810, 811, 340, 801, 802, 427, 427, 427, 427, 427, 427, 427, 427, 802, 427, 427, 427, 782, 784, 784, 787, 427, 427, 427, 427, 427, 782, 783, 6, 6, 788, 789, 427, 427, 427, 812, 813, 793, 804, 805, 793, 814, 815, 427, 427, 427, 794, 795, 6, 6, 799, 800, 427, 427, 785, 786, 427, 794, 803, 803, 800, 427, 792, 798, 796, 797, 427, 427, 427, 427, 427, 427, 806, 807 });//805 cable club
+        BottomTiles.Add(new List<int> { 827 });//827 current multi-tiles
         //don't need to fill out the rest
 
         //If I ever want to bring back the full menu
@@ -147,9 +149,8 @@ public class TileMenuTiles : MonoBehaviour
                     if (x < 0) x = 0;
                     if (y < -7) x = -7;
                     if (y > 0) y = 0;
-                    int SelectTile = int.Parse(ThisTilemap.GetTile<Tile>(new Vector3Int(x, y, 0)).name);
-                    print(SelectTile);
                     //move tile to side bar
+                    SideMenu.GetComponent<menu>().updatetile(int.Parse(ThisTilemap.GetTile<Tile>(new Vector3Int(x, y, 0)).name));
                 }
 
             }
