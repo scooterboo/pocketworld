@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 public class TeleportHandler : MonoBehaviour
 {
     private string savefolder;
-    private Vector3 oldpos = new Vector3(0f, 0f, 0f);
+    private Vector3Int oldpos = new Vector3Int(0, 0, 0);
     public GameObject movement;
 
 
@@ -26,9 +26,9 @@ public class TeleportHandler : MonoBehaviour
     {
         if (gameObject.GetComponent<the_world>().world == "loaf-1")
         {
-            Vector3 pos = movement.GetComponent<Movement>().pos;
+            Vector3Int pos = movement.GetComponent<Movement>().intpos;
             string wolrdstring = "loaf-" + System.Convert.ToBase64String(System.BitConverter.GetBytes(((long)pos.x << 32) + (long)pos.y)).Replace('/', '=');
-            TeleportInterior(wolrdstring, new Vector3(0f, 0f, 0f));
+            TeleportInterior(wolrdstring, new Vector3Int(0, 0, 0));
         }
         else
         {
@@ -45,7 +45,7 @@ public class TeleportHandler : MonoBehaviour
         oldpos.y -= 1;
 
         //teleport
-        movement.GetComponent<Movement>().pos = oldpos;
+        movement.GetComponent<Movement>().intpos = oldpos;
         movement.transform.position = oldpos;
 
         //clear old tiles
@@ -56,14 +56,14 @@ public class TeleportHandler : MonoBehaviour
 
 
     }
-    private void TeleportInterior(string worldID, Vector3 pos)
+    private void TeleportInterior(string worldID, Vector3Int pos)
     {
         //change world
         gameObject.GetComponent<the_world>().world = worldID;
 
         //teleport
-        oldpos = movement.GetComponent<Movement>().pos;
-        movement.GetComponent<Movement>().pos = pos;
+        oldpos = movement.GetComponent<Movement>().intpos;
+        movement.GetComponent<Movement>().intpos = pos;
         movement.transform.position = pos;
 
         //clear old tiles

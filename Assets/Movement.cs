@@ -5,20 +5,16 @@ using UnityEngine.Tilemaps;
 
 public class Movement : MonoBehaviour
 {
-    public float walk_delay = 0.3f;
     public bool choppy_movement = true;
     private float smoothment_factor;
     private string sprite_direction = "down";
-    private float time = 0;
     private float step_time = 0;
-    public Vector3 pos;
-    private int step_number =0;
-    private int direction = 0; //NESW is 1234
+    public Vector3Int intpos;
+    private int step_number = 0;
     private int step_direction = 0; //NESW is 1234
     private Dictionary<string, int> sprstr2inty = new Dictionary<string, int>();
     private bool foot_side_right = true;
     public Tilemap WorldTilemap;
-    public Tilemap SelectorTilemap;
     private Texture2D playertex;
     private int currsprite = 47;
     private List<Sprite[]> playersprite = new List<Sprite[]>();
@@ -30,9 +26,8 @@ public class Movement : MonoBehaviour
     void Start()
     {
         //set up those inital values
-        pos = transform.position;
-        time = Time.time;
-        step_time = time;
+        intpos = new Vector3Int(0,0,0);
+        step_time = 0;
 
         if (choppy_movement) { smoothment_factor = 8.0f; }
         else { smoothment_factor = 16.0f; }
@@ -51,13 +46,11 @@ public class Movement : MonoBehaviour
         sprstr2inty.Add("sprite_right_walk_right", 9);
         sprstr2inty.Add("sprite_right_walk_left", 9);
 
-
-        WorldTilemap.GetComponent<the_world>().loadchunk3x3(Mathf.FloorToInt(pos.x), Mathf.FloorToInt(pos.y));
+        WorldTilemap.GetComponent<the_world>().loadchunk3x3(intpos.x, intpos.y);
 
         playertex = new Texture2D(2, 2);
         playertex.LoadImage(File.ReadAllBytes(WorldTilemap.GetComponent<the_world>().texturefolder + "\\BlueNA\\people.png"));
         playertex.filterMode = FilterMode.Point;
-
 
         for (int i = 0; i < 51; ++i)
         {
@@ -68,22 +61,15 @@ public class Movement : MonoBehaviour
             }
         }
 
-
-
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        //don't move wile the main tile menu is up.
+        //temp character slection. This will be replaced by a menu later. DOn't character select wile the menu is open.
         if (MainTileMenuTrans.position.z > 0)
         {
-            //if you press a direction, you go that direction.
-            if (Input.GetKeyDown("up") || Input.GetKeyDown("w")) direction = 1;
-            if (Input.GetKeyDown("right") || Input.GetKeyDown("d")) direction = 2;
-            if (Input.GetKeyDown("down") || Input.GetKeyDown("s")) direction = 3;
-            if (Input.GetKeyDown("left") || Input.GetKeyDown("a")) direction = 4;
             if (Input.GetKeyDown("3"))
             {
                 --currsprite;
@@ -99,105 +85,115 @@ public class Movement : MonoBehaviour
             }
         }
 
-        //conceptually, think of this as the end of a step/start of a new one.
-        //don't move wile the main tile menu is up.
-        if (time < Time.time - walk_delay && MainTileMenuTrans.position.z > 0)
+        //a step is sceduled:
+        if (step_number > 0 && step_time < Time.time)
         {
-
-            //read held directions
-            if (Input.GetKey("up") || Input.GetKey("w")) direction = 1;
-            if (Input.GetKey("right") || Input.GetKey("d")) direction = 2;
-            if (Input.GetKey("down") || Input.GetKey("s")) direction = 3;
-            if (Input.GetKey("left") || Input.GetKey("a")) direction = 4;
-
-            //draw sprite
-            if (direction == 1) sprite_direction = "up";
-            if (direction == 2) sprite_direction = "right";
-            if (direction == 3) sprite_direction = "down";
-            if (direction == 4) sprite_direction = "left";
-            gameObject.GetComponent<SpriteRenderer>().sprite = playersprite[currsprite][sprstr2inty["sprite_" + sprite_direction]];
-
-
-            //value added position snapping
-            pos.y = Mathf.Round(pos.y);
-            pos.x = Mathf.Round(pos.x);
-            transform.position = pos;
-
-            //value added time snapping
-            time = Mathf.Round(Time.time / walk_delay) * walk_delay;
-
-            if (WorldTilemap.GetComponent<Tilemap>().GetTile<Tile>(new Vector3Int((int)pos.x, (int)pos.y, 0)).name == "10")
-            {
-                WorldTilemap.GetComponent<TeleportHandler>().IWannaTeleport();
-                //value added halting
-                direction = 0;
-            }
-
-            //setup the steps
-            //we're going
-            if (direction != 0)
-            {
-                //check for unloaded chunks
-                WorldTilemap.GetComponent<the_world>().loadchunk3x3(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.y));
-
-
-                step_time = time + (walk_delay / smoothment_factor);
-                if (step_number > 1) foot_side_right = !foot_side_right;
-                step_number = 1;
-
-                Vector3Int wantpos = new Vector3Int((int)pos.x, (int)pos.y, 0);
-                if (direction == 1) wantpos.y += 1;
-                if (direction == 2) wantpos.x += 1;
-                if (direction == 3) wantpos.y -= 1;
-                if (direction == 4) wantpos.x -= 1;
-
-                Tile movementtile = WorldTilemap.GetTile<Tile>(wantpos);
-                if (movementtile != null)
-                {
-                    the_world.tiledata tiledata = WorldTilemap.GetComponent<the_world>().properties[movementtile];
-                    if (tiledata.water == true) direction = 5;
-                    if (tiledata.bump == true) direction = 5;
-                }
-                else
-                {
-                    direction = 5;
-                }
-
-
-            }
-            //we stopped.
-            if (direction == 0)
-            {
-                step_number = 0;
-                foot_side_right = true;
-            }
-
-            step_direction = direction;
-            direction = 0;
-            SelectorTilemap.GetComponent<SelectorGrid>().UpdateSprite();
+            step_number = takeStep();
         }
 
-        //a step is sceduled:
-        if (step_time < Time.time && step_direction != 0 && smoothment_factor >= step_number)
-        {
-            step_number++;
-            if (step_direction == 1) pos.y += 1.0f / smoothment_factor;
-            if (step_direction == 2) pos.x += 1.0f / smoothment_factor;
-            if (step_direction == 3) pos.y -= 1.0f / smoothment_factor;
-            if (step_direction == 4) pos.x -= 1.0f / smoothment_factor;
+    }
 
-            transform.position = pos;
-            step_time = time + step_number * (walk_delay / smoothment_factor);
+    public void attemptMovement(int direction)
+    {
+        //draw sprite. if diection is 0, keep current sprite direction.
+        if (direction == 1) sprite_direction = "up";
+        if (direction == 2) sprite_direction = "right";
+        if (direction == 3) sprite_direction = "down";
+        if (direction == 4) sprite_direction = "left";
+        gameObject.GetComponent<SpriteRenderer>().sprite = playersprite[currsprite][sprstr2inty["sprite_" + sprite_direction]];
+
+
+        //if we are on a door, do a teleport.
+        //value added void loading.
+        if (WorldTilemap.GetTile<Tile>(intpos) == null)
+        {
+            WorldTilemap.GetComponent<the_world>().loadchunk3x3(intpos.x, intpos.y);
+        }
+        if (WorldTilemap.GetTile<Tile>(intpos).name == "10")
+        {
+            WorldTilemap.GetComponent<TeleportHandler>().IWannaTeleport();
+            //don't move after teleporting.
+            direction = 0;
+        }
+
+        //setup the steps
+        //we're going places
+        if (direction != 0)
+        {
+            //check for unloaded chunks
+            WorldTilemap.GetComponent<the_world>().loadchunk3x3(intpos.x, intpos.y);
+
+            //schedule a step
+            step_number = 1;
+            step_time = Time.time;
+
+            //check if we can walk where we want to go. 5 means we walk, but don't move
+            Vector3Int wantpos = intpos;
+            if (direction == 1) wantpos.y += 1;
+            if (direction == 2) wantpos.x += 1;
+            if (direction == 3) wantpos.y -= 1;
+            if (direction == 4) wantpos.x -= 1;
+            Tile movementtile = WorldTilemap.GetTile<Tile>(wantpos);
+            if (movementtile != null)
+            {
+                the_world.tiledata tiledata = WorldTilemap.GetComponent<the_world>().properties[movementtile];
+                if (tiledata.water == true) direction = 5;
+                if (tiledata.bump == true) direction = 5;
+            }
+            else
+            {
+                direction = 5;
+            }
+
+            //move the position where will be.
+            if (direction == 1) intpos.y += 1;
+            if (direction == 2) intpos.x += 1;
+            if (direction == 3) intpos.y -= 1;
+            if (direction == 4) intpos.x -= 1;
+
+        }
+
+        //we are not moving.
+        if (direction == 0)
+        {
+            //reset feet
+            foot_side_right = true;
+        }
+
+
+        step_direction = direction;
+    }
+
+    private int takeStep() {
+
+        //schedule next step.
+        step_time += gameObject.GetComponent<ClientController>().walk_delay / smoothment_factor;
+        //move
+        if (step_direction == 1) transform.position = new Vector3(intpos.x, -1 + intpos.y + step_number / smoothment_factor, 0);
+        if (step_direction == 2) transform.position = new Vector3(-1 + intpos.x + step_number / smoothment_factor, intpos.y, 0);
+        if (step_direction == 3) transform.position = new Vector3(intpos.x, 1 + intpos.y - step_number / smoothment_factor, 0);
+        if (step_direction == 4) transform.position = new Vector3(1 + intpos.x - step_number / smoothment_factor, intpos.y, 0);
+        
+
+        //on the second half of the steps, change the sprite to the stepping sprite.
+        if (step_number > (smoothment_factor / 2.0f))
+        {
             string step_foot = "left";
             if (foot_side_right) step_foot = "right";
-            if (step_number > (smoothment_factor / 2.0f)) gameObject.GetComponent<SpriteRenderer>().sprite = playersprite[currsprite][sprstr2inty["sprite_" + sprite_direction + "_walk_" + step_foot]];
-
+            gameObject.GetComponent<SpriteRenderer>().sprite = playersprite[currsprite][sprstr2inty["sprite_" + sprite_direction + "_walk_" + step_foot]];
         }
 
-        if (Input.GetKeyDown("escape"))
+        //increment the step number or stop when we reach the end.
+        if (step_number >= smoothment_factor)
         {
-            Application.Quit();
+            foot_side_right = !foot_side_right;
+            return 0;
+        }
+        else
+        {
+            return ++step_number;
         }
     }
+
 
 }

@@ -1268,9 +1268,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2054593699}
-  - component: {fileID: 2054593698}
   - component: {fileID: 2054593697}
+  - component: {fileID: 2054593698}
   - component: {fileID: 2054593700}
+  - component: {fileID: 2054593701}
   m_Layer: 0
   m_Name: player
   m_TagString: Untagged
@@ -1341,11 +1342,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74aee2b1e3b1b3848b7e601cfb15456b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walk_delay: 0.3
   choppy_movement: 0
-  pos: {x: 0, y: 0, z: 0}
+  intpos: {x: 0, y: 0, z: 0}
   WorldTilemap: {fileID: 1417114529}
-  SelectorTilemap: {fileID: 559145792}
   MainTileMenuTrans: {fileID: 1513557875}
 --- !u!4 &2054593699
 Transform:
@@ -1376,3 +1375,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f33fe068ce12fb846af52155cb97dc1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2054593701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2054593696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ae7a535a39c42f48856538c2248665c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walk_delay: 0.3
+  MainTileMenuTrans: {fileID: 1513557875}
+  SelectorTilemap: {fileID: 559145792}
