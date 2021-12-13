@@ -9,9 +9,7 @@ public class menu : MonoBehaviour
     public Tilemap SelectorTilemap;
     public Transform menuselector;
     public Transform MainTileMenuTrans;
-    private int tileloc = 0;
 
-    private int tilemax = 824;
 
     // Start is called before the first frame update
     void Start()
@@ -27,9 +25,14 @@ public class menu : MonoBehaviour
 
         menuselector.localPosition = new Vector3(0f, -4.5f, -0.5f);
 
-        for (int i = 0; i <= 8; ++i)
+
+        Saving saving = new Saving();
+        saving.Start(); //I'm doing something wrong here.
+        (Vector3Int position, int[] sprite, int[] tiles) = saving.loadplayer();
+        MenuTilemap.SetTile(new Vector3Int(0, -1, 0), WorldTilemap.GetComponent<the_world>().tiles[0]);
+        for (int i = 0; i < 8; ++i)
         {
-            MenuTilemap.SetTile(new Vector3Int(0, i - 1, 0), WorldTilemap.GetComponent<the_world>().tiles[i]);
+            MenuTilemap.SetTile(new Vector3Int(0, i, 0), WorldTilemap.GetComponent<the_world>().tiles[tiles[i]]);
         }
 
         Texture2D menubutton = Resources.Load<Texture2D>("menu");

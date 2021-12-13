@@ -1345,6 +1345,7 @@ MonoBehaviour:
   choppy_movement: 0
   intpos: {x: 0, y: 0, z: 0}
   WorldTilemap: {fileID: 1417114529}
+  currsprite: 47
   MainTileMenuTrans: {fileID: 1513557875}
 --- !u!4 &2054593699
 Transform:
@@ -1390,3 +1391,4 @@ MonoBehaviour:
   walk_delay: 0.3
   MainTileMenuTrans: {fileID: 1513557875}
   SelectorTilemap: {fileID: 559145792}
+  MenuTilemap: {fileID: 1606807945}

@@ -13,11 +13,15 @@ public class ClientController : MonoBehaviour
     public Transform MainTileMenuTrans;
     private int direction = 0;
     public Tilemap SelectorTilemap;
+    private Saving saving;
+    public Tilemap MenuTilemap;
 
     // Start is called before the first frame update
     void Start()
     {
         time = Time.time;
+        saving = new Saving();
+        saving.Start(); //I'm doing something wrong here.
     }
 
     // Update is called once per frame
@@ -43,6 +47,14 @@ public class ClientController : MonoBehaviour
             //update the selector grid
             SelectorTilemap.GetComponent<SelectorGrid>().UpdateSprite();
             //save
+            int[] tiles = new int[8];
+            for (int i = 0; i < 8; ++i)
+            {
+                tiles[i] = int.Parse(MenuTilemap.GetTile(new Vector3Int(0, i, 0)).name);
+            }
+            Vector3Int pos = gameObject.GetComponent<Movement>().intpos;
+            int[] sprite = new int[] { gameObject.GetComponent<Movement>().currsprite, 0 };
+            saving.saveplayer(pos, sprite, tiles);
         }
     }
 

@@ -16,7 +16,7 @@ public class Movement : MonoBehaviour
     private bool foot_side_right = true;
     public Tilemap WorldTilemap;
     private Texture2D playertex;
-    private int currsprite = 47;
+    public int currsprite;
     private List<Sprite[]> playersprite = new List<Sprite[]>();
     public Transform MainTileMenuTrans;
 
@@ -26,7 +26,12 @@ public class Movement : MonoBehaviour
     void Start()
     {
         //set up those inital values
-        intpos = new Vector3Int(0,0,0);
+        Saving saving = new Saving();
+        saving.Start(); //I'm doing something wrong here.
+        (Vector3Int position, int[] sprite, int[] tiles) = saving.loadplayer();
+        intpos = position;
+        currsprite = sprite[0];
+        gameObject.transform.position = new Vector3(position.x, position.y, 0);
         step_time = 0;
 
         if (choppy_movement) { smoothment_factor = 8.0f; }
